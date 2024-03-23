@@ -1,0 +1,80 @@
+
+  <div class="mat-elevation-z8" class="column">
+    <table mat-table [dataSource]="data" class="custom-table" matSort>
+      <ng-container matColumnDef="id">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> ID </th>
+        <td mat-cell *matCellDef="let game"> {{game.id}} </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="Gamename">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Gamename </th>
+        <td mat-cell *matCellDef="let game">
+          <span *ngIf="!isEditing || game !== selectedGame">{{ game.Gamename }}</span>
+          <mat-form-field *ngIf="isEditing && game === selectedGame">
+            <input matInput [(ngModel)]="game.Gamename">
+          </mat-form-field>
+        </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="platform">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Platform </th>
+        <td mat-cell *matCellDef="let game">
+          <span *ngIf="!isEditing || game !== selectedGame">{{ game.platform }}</span>
+          <mat-form-field *ngIf="isEditing && game === selectedGame">
+            <input matInput [(ngModel)]="game.platform">
+          </mat-form-field>
+        </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="tag">
+        <th mat-header-cell *matHeaderCellDef mat-sort-header> Tag </th>
+        <td mat-cell *matCellDef="let game">
+          <span *ngIf="!isEditing || game !== selectedGame">{{ game.tag }}</span>
+          <mat-form-field *ngIf="isEditing && game === selectedGame">
+            <input matInput [(ngModel)]="game.tag">
+          </mat-form-field>
+        </td>
+      </ng-container>
+  
+      <ng-container matColumnDef="Action" class="button">
+        <th mat-header-cell *matHeaderCellDef> Action </th>
+        <td mat-cell *matCellDef="let game" class="action-buttons" id="btn">
+          <button mat-button *ngIf="!isEditing || game !== selectedGame" (click)="editGame(game)">Edit</button>
+          <button mat-button (click)="deleteGame(game.id)">Delete</button>
+          <button mat-button *ngIf="isEditing && game === selectedGame" (click)="saveGame()">Save</button>
+         
+          
+        </td>
+      </ng-container>
+      
+      
+  
+      <tr mat-header-row *matHeaderRowDef="column"></tr>
+      <tr mat-row *matRowDef="let game; columns: column"></tr>
+    </table>
+    <mat-paginator [pageSizeOptions]="pageSizeOptions" showFirstLastButtons aria-label="Select page of games">
+    </mat-paginator>
+
+
+    <div class="center" >
+      <div class="form">  
+          <mat-form-field>
+        <input matInput placeholder="ID" [(ngModel)]="newGameId">
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Game Name" [(ngModel)]="newGameName">
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Platform" [(ngModel)]="newGamePlatform">
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Tag" [(ngModel)]="newGameTag">
+      </mat-form-field>
+    </div>
+       <div class="button">
+        <button mat-raised-button color="primary" (click)="addNewGame()">Add New Game</button>
+       </div>
+      
+    </div>
+  </div>
+  

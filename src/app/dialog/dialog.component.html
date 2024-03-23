@@ -1,0 +1,9 @@
+<h1 mat-dialog-title>Add Node</h1>
+<div mat-dialog-content>
+  <form #form="ngForm" (ngSubmit)="onSubmit(form.value)">
+    <mat-form-field>
+      <input matInput placeholder="New Node" name="name" ngModel required>
+    </mat-form-field>
+    <button mat-raised-button color="primary" type="submit">Add Node</button>
+  </form>
+</div>

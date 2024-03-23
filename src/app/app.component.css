@@ -1,0 +1,39 @@
+/* 
+.column {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+   
+}
+.center {
+    margin-top: 30px;
+    display: flex; 
+    justify-content: center; 
+     align-items: center;  
+    width: 100%;
+     align-content: center; 
+    
+} */
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #333;
+    overflow: hidden;
+  }
+  
+  li {
+    float: left;
+  }
+  
+  li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 16px;
+    text-decoration: none;
+  }
+  
+  li a:hover {
+    background-color: #111;
+  }
