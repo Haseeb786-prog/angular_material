@@ -1,0 +1,11 @@
+
+<mat-form-field>
+  <mat-label>Select node</mat-label>
+  <mat-select [(value)]="selectedNode">
+    <mat-option *ngFor="let node of flattenedTree" [value]="node.id">
+      {{ node.name }}
+    </mat-option>
+  </mat-select>
+</mat-form-field>
+
+<button mat-raised-button color="primary" (click)="onCloseClick()">Move</button>

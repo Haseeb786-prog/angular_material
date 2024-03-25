@@ -1,89 +1,4 @@
-<!-- <div class="column">
-  <div class="center">
-    
-    <button mat-raised-button color="primary" (click)="openAddParentNodeDialog()">Add Parent Node</button>
-  </div>
 
-  <div class="center">
-    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree-container">
-   
-      <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding class="tree-node">
-     
-        <button mat-icon-button *ngIf="treeControl.getDescendants(node).length > 0" matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
-          <mat-icon class="mat-icon-rtl-mirror">
-            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-          </mat-icon>
-        </button>
-       
-        <ng-container *ngIf="!node.editing; else editMode">
-          {{node.name}}
-          <button mat-icon-button (click)="editNode(node , 'name')" matTooltip="Edit">
-            <mat-icon>edit</mat-icon>
-          </button>
-          <button mat-icon-button (click)="deleteNode(node)" matTooltip="Delete">
-            <mat-icon>delete</mat-icon>
-          </button>
-          <button mat-icon-button (click)="openAddNodeDialog(node.name)" matTooltip="Add Child">
-            <mat-icon>add</mat-icon> 
-          </button>
-        </ng-container>
-        <ng-template #editMode>
-          <mat-form-field>
-            <input matInput mat-icon-button [(ngModel)]="node.name" (blur)="saveEdit(node)" placeholder="Edit node" matTooltip="Save">
-          </mat-form-field>
-          <button mat-icon-button (click)="cancelEdit(node)" matTooltip="Cancel">
-            <mat-icon>cancel</mat-icon>
-          </button>
-        </ng-template>
-      </mat-tree-node>
-    </mat-tree>
-  </div>
-</div> -->
-<!-- 
-<div class="column">
-  <div class="center">
-   
-    <button mat-raised-button color="primary" (click)="openAddParentNodeDialog()">Add Parent Node</button>
-  </div>
-
-  <div class="center">
-    <mat-tree [dataSource]="dataSource" [treeControl]="treeControl" class="tree-container">
-
-      <mat-tree-node *matTreeNodeDef="let node" matTreeNodePadding class="tree-node">
-     
-        <button mat-icon-button *ngIf="treeControl.getDescendants(node).length > 0" matTreeNodeToggle [attr.aria-label]="'Toggle ' + node.name">
-          <mat-icon class="mat-icon-rtl-mirror">
-            {{treeControl.isExpanded(node) ? 'expand_more' : 'chevron_right'}}
-          </mat-icon>
-        </button>
-       
-        <ng-container *ngIf="!node.editing; else editMode">
-          {{node.name}}
-          <button mat-icon-button (click)="editNode(node, node.name)" matTooltip="Edit">
-            <mat-icon>edit</mat-icon>
-          </button>
-           Render delete button only if the node is a leaf 
-          <ng-container *ngIf="treeControl.getDescendants(node).length === 0">
-            <button mat-icon-button (click)="deleteNode(node)" matTooltip="Delete">
-              <mat-icon>delete</mat-icon>
-            </button>
-          </ng-container>
-          <button mat-icon-button (click)="openAddNodeDialog(node.name)" matTooltip="Add Child">
-            <mat-icon>add</mat-icon> 
-          </button>
-        </ng-container>
-        <ng-template #editMode>
-          <mat-form-field>
-            <input matInput mat-icon-button [(ngModel)]="node.name" (blur)="saveEdit(node)" placeholder="Edit node" matTooltip="Save">
-          </mat-form-field>
-          <button mat-icon-button (click)="cancelEdit(node)" matTooltip="Cancel">
-            <mat-icon>cancel</mat-icon>
-          </button>
-        </ng-template>
-      </mat-tree-node>
-    </mat-tree>
-  </div>
-</div> --> 
 <div class="column">
   <div class="center">
     <button mat-raised-button color="primary" (click)="openAddParentNodeDialog()">Add Parent Node</button>
@@ -100,7 +15,7 @@
        
         <ng-container *ngIf="!node.editing; else editMode">
           {{node.name}}
-          <button mat-icon-button (click)="editNode(node, node.name)" matTooltip="Edit">
+          <button mat-icon-button (click)="openEditDialog(node.id)" matTooltip="Edit">
             <mat-icon>edit</mat-icon>
           </button>
           <ng-container *ngIf="treeControl.getDescendants(node).length === 0">
@@ -108,8 +23,11 @@
               <mat-icon>delete</mat-icon>
             </button>
           </ng-container>
-          <button mat-icon-button (click)="openAddNodeDialog(node.name)" matTooltip="Add Child">
+          <button mat-icon-button (click)="openAddNodeDialog(node.id)" matTooltip="Add Child">
             <mat-icon>add</mat-icon> 
+          </button>
+          <button mat-icon-button (click)="moveNodeDialog(node.id)" matTooltip="move">
+             <mat-icon>compare_arrows</mat-icon>
           </button>
         </ng-container>
         <ng-template #editMode>

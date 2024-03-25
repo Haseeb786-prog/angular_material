@@ -1,6 +1,6 @@
 import { Component, Inject } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
-import { FoodNode, TreeComponent } from '../tree/tree.component';
+import {  TreeComponent } from '../tree/tree.component';
 
 @Component({
   selector: 'app-dialog',

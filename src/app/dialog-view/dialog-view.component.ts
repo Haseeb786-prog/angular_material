@@ -1,6 +1,8 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FoodNode, TREE_DATA, TreeComponent } from '../tree/tree.component'; // Import FoodNode interface
+import { TreeComponent } from '../tree/tree.component'; // Import FoodNode interface
+import { FoodNode } from '../data';
+
 
 
 @Component({
@@ -11,7 +13,7 @@ import { FoodNode, TREE_DATA, TreeComponent } from '../tree/tree.component'; // 
 export class DialogViewComponent {
   constructor(
     public dialogRef: MatDialogRef<TreeComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: { parentNode: FoodNode }
+    @Inject(MAT_DIALOG_DATA) public data: { parentNode: FoodNode}
   ) {}
 
   onSubmit(formData: any): void {

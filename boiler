@@ -1,17 +1,19 @@
 
-import { Component } from '@angular/core';
+
+
+import { Component, ChangeDetectionStrategy } from '@angular/core';
 import { FlatTreeControl } from '@angular/cdk/tree';
 import { MatTreeFlattener, MatTreeFlatDataSource } from '@angular/material/tree';
 import { MatDialog } from '@angular/material/dialog';
 import { DialogViewComponent } from '../dialog-view/dialog-view.component';
 import { DialogComponent } from '../dialog/dialog.component';
 import { FoodNode, TREE_DATA } from '../data';
-import { EditDialogComponent } from '../edit-dialog/edit-dialog.component';
-import { SelectDataDialogComponent } from '../select-data-dialog/select-data-dialog.component';
+import { BehaviorSubject } from 'rxjs';
+import { distinctUntilChanged } from 'rxjs/operators';
 
 interface ExampleFlatNode {
   expandable: boolean;
-  id:number;
+  id: number;
   name: string;
   level: number;
   expanded: boolean;
@@ -21,7 +23,8 @@ interface ExampleFlatNode {
 @Component({
   selector: 'app-tree',
   templateUrl: './tree.component.html',
-  styleUrls: ['./tree.component.css']
+  styleUrls: ['./tree.component.css'],
+  changeDetection: ChangeDetectionStrategy.OnPush
 })
 export class TreeComponent {
   maxId: number;
@@ -29,7 +32,7 @@ export class TreeComponent {
     return {
       level: level,
       expandable: !!node.children && node.children.length > 0,
-      id:node.id,
+      id: node.id,
       name: node.name,
       expanded: true
     };
@@ -47,38 +50,38 @@ export class TreeComponent {
     node => node.children
   );
 
+  
   dataSource = new MatTreeFlatDataSource(this.treeControl, this.treeFlattener);
+ 
+  private _dataSourceSubject = new BehaviorSubject<FoodNode[]>([]);
 
   expandedNodes: { [nodeName: string]: boolean } = {};
 
   constructor(public dialog: MatDialog) {
     this.maxId = this.getMaxIdFromData(TREE_DATA);
     this.dataSource.data = TREE_DATA;
-  
+
+    this.dataSource.data = TREE_DATA;
+    this._dataSourceSubject.pipe(distinctUntilChanged()).subscribe(data => {
+      this.dataSource.data = data;
+    });
   }
-
-
 
   hasChild = (_: number, node: ExampleFlatNode) => node.expandable;
 
   deleteNode(node: FoodNode) {
-    console.log(node.id);
-    
     const index = TREE_DATA.findIndex(item => item.id === node.id);
-  
     if (index !== -1) {
       TREE_DATA.splice(index, 1);
-     ; // Remove expansion state
-      this.dataSource.data = TREE_DATA;
+      this.updateDataSource(TREE_DATA);
     } else {
       this.deleteChildNode(node.id);
     }
   }
-  
+
   deleteChildNode(nodeId: number): boolean {
-    console.log(nodeId)
     let isDeleted = false;
-  
+
     function deleteChildNodeRecursive(nodes: FoodNode[]): boolean {
       for (let i = 0; i < nodes.length; i++) {
         const node = nodes[i];
@@ -98,18 +101,41 @@ export class TreeComponent {
       }
       return isDeleted;
     }
-  
+
     isDeleted = deleteChildNodeRecursive(TREE_DATA);
-  
+
     if (isDeleted && this.dataSource) {
-      this.dataSource.data = TREE_DATA.slice();
+      this.updateDataSource(TREE_DATA);
     }
-  
+
     return isDeleted;
   }
-  
 
- 
+  editNode(node: FoodNode, newName: string) {
+    node.editing = true;
+
+    const findNode = (nodes: FoodNode[]): FoodNode | null => {
+      for (const n of nodes) {
+        if (n === node) {
+          n.name = newName;
+          return n;
+        }
+        if (n.children) {
+          const updatedChild = findNode(n.children);
+          if (updatedChild) {
+            return n;
+          }
+        }
+      }
+      return null;
+    };
+
+    const updatedNode = findNode(TREE_DATA);
+
+    if (updatedNode) {
+    }
+  }
+
   saveEdit(node: FoodNode) {
     node.editing = false;
   }
@@ -132,44 +158,39 @@ export class TreeComponent {
     });
   }
 
- 
   addChildNode(parentNodeId: number, childNode: FoodNode): boolean {
     let isAdded = false;
-  
-    // Function to generate a unique id
+
     const generateUniqueId = () => {
       return ++this.maxId;
     };
-  
+
     function addChildNodeRecursive(nodes: FoodNode[]): boolean {
       for (const node of nodes) {
         if (node.id === parentNodeId) {
           if (!node.children) {
             node.children = [];
           }
-          // Assign a unique id to the child node
           childNode.id = generateUniqueId();
           node.children.push(childNode);
+          
           isAdded = true;
-          // Expand parent node
           break;
         } else if (node.children && addChildNodeRecursive(node.children)) {
-          // Early exit if child is added deeper in the tree
           break;
         }
       }
       return isAdded;
     }
-  
+
     isAdded = addChildNodeRecursive(TREE_DATA);
-  
+
     if (isAdded && this.dataSource) {
-      this.dataSource.data = TREE_DATA.slice();
+      this.updateDataSource(TREE_DATA);
     }
-  
+
     return isAdded;
   }
-  
 
   getMaxIdFromData(data: FoodNode[]): number {
     let maxId = 0;
@@ -187,18 +208,14 @@ export class TreeComponent {
     return maxId;
   }
 
-  
-
   addParentNode(name: string) {
-    // Increment maxId and assign it to the new parent node
     const newNode: FoodNode = {
       id: ++this.maxId,
       name,
       children: []
     };
     TREE_DATA.push(newNode);
-    console.log(TREE_DATA)
-    this.dataSource.data = TREE_DATA;
+    this.updateDataSource(TREE_DATA);
   }
 
   openAddParentNodeDialog(): void {
@@ -213,10 +230,10 @@ export class TreeComponent {
     });
   }
 
-  findNodeById(nodeId: number): FoodNode | null {
+  findNodeByName(name: string): FoodNode | null {
     function findNodeRecursive(nodes: FoodNode[]): FoodNode | null {
       for (const node of nodes) {
-        if (node.id === nodeId) {
+        if (node.name === name) {
           return node;
         }
         if (node.children) {
@@ -228,101 +245,12 @@ export class TreeComponent {
       }
       return null;
     }
-  
+
     return findNodeRecursive(TREE_DATA);
   }
-  
 
-
-  openEditDialog(nodeId:number):void{
-    const dialogRef = this.dialog.open(EditDialogComponent, {
-      width: '250px',
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        console.log(nodeId,result)
-        this.editNode(nodeId,result.name);
-      }
-    });
-
-  }
-  editNode(nodeId: number, newName: string): boolean {
-    let isUpdated = false;
-  
-    const findAndUpdateNode = (nodes: FoodNode[]): boolean => {
-      for (const node of nodes) {
-        if (node.id === nodeId) {
-          node.name = newName; // Update the node's name
-          isUpdated = true; // Mark as updated
-          return true; // Return true to indicate update
-        }
-        if (node.children) {
-          if (findAndUpdateNode(node.children)) {
-            return true; // Return true if child node was updated
-          }
-        }
-      }
-      return false; // Return false if node was not found or updated
-    };
-  
-    if (findAndUpdateNode(TREE_DATA)) {
-      // If node was updated, update dataSource
-      this.dataSource.data = TREE_DATA.slice();
-      return true; // Return true if update was successful
-    }
-  
-    return false; // Return false if node was not found or updated
+  private updateDataSource(data: FoodNode[]): void {
+    this._dataSourceSubject.next(data);
   }
   
-  
-  moveNodeDialog(id: number): void {
-    // Function to recursively find and remove node from tree data
-    const findAndRemoveNode = (nodes: any[], targetId: number): any => {
-      for (let i = 0; i < nodes.length; i++) {
-        if (nodes[i].id === targetId) {
-          // Found the target node, remove it and return it
-          const removedNode = nodes.splice(i, 1)[0];
-          return removedNode;
-        }
-        if (nodes[i].children) {
-          // Recursively search in children
-          const removedNode = findAndRemoveNode(nodes[i].children, targetId);
-          if (removedNode) return removedNode;
-        }
-      }
-      return null; 
-    };
-
-   
-    const updatedTreeData = TREE_DATA;
-
-    const removedNode = findAndRemoveNode(updatedTreeData, id); 
-    const dialogRef = this.dialog.open(SelectDataDialogComponent, {
-      width: '500px',
-      data: { updatedTreeData: updatedTreeData, removedNode: removedNode } // Pass removed node and updated tree data to dialog component
-    });
-
-    dialogRef.afterClosed().subscribe(result => {
-      if (result) {
-        console.log(result.id, TREE_DATA);
-        this.pushRemovedNodeIntoTree(updatedTreeData, result.id, removedNode);
-        // Assuming this.dataSource.data represents your tree data in the UI
-        this.dataSource.data = updatedTreeData; // Update the tree data in the UI
-      }
-    });
-  }
-
-  pushRemovedNodeIntoTree(tree: any[], nodeId: number, removedNode: any): void {
-    for (const node of tree) {
-      if (node.id === nodeId) {
-        if (!node.children) {
-          node.children = [];
-        }
-        node.children.push(removedNode);
-        return;
-      } else if (node.children) {
-        this.pushRemovedNodeIntoTree(node.children, nodeId, removedNode);
-      }
-    }
-  }
 }

@@ -1,6 +1,7 @@
 import { Component, Inject } from '@angular/core';
 import { MatDialogRef, MAT_DIALOG_DATA } from '@angular/material/dialog';
-import { FoodNode, TREE_DATA, TreeComponent } from '../tree/tree.component'; // Import FoodNode interface
+import {  TreeComponent } from '../tree/tree.component'; // Import FoodNode interface
+import { TREE_DATA } from '../data';
 
 
 @Component({

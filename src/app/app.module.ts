@@ -39,6 +39,8 @@ import { MAT_DIALOG_DATA,   MatDialogActions, MatDialogClose, MatDialogConfig, M
 import { SelectComponent } from './select/select.component';
 import { DialogComponent } from './dialog/dialog.component';
 import { EditDialogComponent } from './edit-dialog/edit-dialog.component';
+import { SelectDataDialogComponent } from './select-data-dialog/select-data-dialog.component';
+
 // import { AddTreeComponent } from './add-tree/add-tree.component';
 
 @NgModule({
@@ -57,7 +59,8 @@ import { EditDialogComponent } from './edit-dialog/edit-dialog.component';
     DialogViewComponent,
     SelectComponent,
     DialogComponent,
-    EditDialogComponent
+    EditDialogComponent,
+    SelectDataDialogComponent
 
    
   ],
@@ -104,7 +107,7 @@ import { EditDialogComponent } from './edit-dialog/edit-dialog.component';
       MatDialogActions,
       MatDialogContent,
       MatDialogTitle,
-      FormsModule
+      FormsModule,
 
       
   
